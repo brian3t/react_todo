@@ -2,13 +2,17 @@ import React, {Component} from 'react'
 import j$ from 'jquery'
 import TdEnter from "./TdEnter"
 import Tds from "./Tds"
+import {useGet} from "restful-react"
 
 export default class TodoDash extends Component {
   constructor(props){
     super(props)
-    this.state = {
+    let {data} = useGet({
+      path: "http://api.wagapi/v1/todo",
+    })
+    /*{
       tds: [{desc: 'todo 1', is_done: false}, {desc: 'todo 2', is_done: true}]
-    }
+    }*/
   }
 
   tdEnterOnKeyUp = (e) => {
