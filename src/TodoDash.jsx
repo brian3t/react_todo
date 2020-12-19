@@ -1,56 +1,77 @@
-import React, {Component} from 'react'
+import React, {Component, useState, useEffect} from 'react'
 import j$ from 'jquery'
 import TdEnter from "./TdEnter"
 import Tds from "./Tds"
 import {useGet} from "restful-react"
 
-export default class TodoDash extends Component {
-  constructor(props){
-    super(props)
-    let {data} = useGet({
-      path: "http://api.wagapi/v1/todo",
-    })
-    /*{
-      tds: [{desc: 'todo 1', is_done: false}, {desc: 'todo 2', is_done: true}]
-    }*/
-  }
+function Example(){
+    const [count, setCount] = useState(0);
 
-  tdEnterOnKeyUp = (e) => {
-    if (e.keyCode !== 13) {
-      return
-    }
-
-    const new_desc = e.target.value
-    this.setState({
-      tds: [{desc: new_desc, is_done: false}, ...this.state.tds]
-    })
-    j$('#tdinp').val('').text('')
-  }
-  tdsOnCheck = (desc) => {
-    let new_tds = this.state.tds
-
-    let td_index = new_tds.findIndex(td => (td.desc === desc))
-    if (td_index < 0) {
-      alert('bad key')
-      return false
-    }
-    new_tds[td_index].is_done = ! (new_tds[td_index].is_done)
-    this.setState({
-      tds: new_tds
-    })
-  }
-  tdsDel = (desc) => {
-    this.setState({
-      tds: this.state.tds.filter(td => (td.desc !== desc))
-    })
-  }
-
-  render = () => (
-    <div>
-      Add new todo
-      <TdEnter onKeyUp={this.tdEnterOnKeyUp} />
-      <Tds tds={this.state.tds} onCheck={this.tdsOnCheck} tdsDel={this.tdsDel} />
-    </div>
-  )
-
+    // Similar to componentDidMount and componentDidUpdate:  useEffect(() => {    // Update the document title using the browser API    document.title = `You clicked ${count} times`;  });
+    return (
+        <div>
+            <p>You clicked {count} times</p>
+            <button onClick={() => setCount(count + 1)}>
+                Click me
+            </button>
+        </div>
+    );
 }
+
+// eslint-disable-next-line react/prop-types
+function Counter({initialCount}){
+    const [count, setCount] = useState(initialCount);
+    return (
+        <>
+            Count: {count}
+            <button onClick={() => setCount(initialCount)}>Reset</button>
+            <button onClick={() => setCount(prevCount => prevCount - 1)}>-</button>
+            <button onClick={() => setCount(prevCount => prevCount + 1)}>+</button>
+        </>
+    );
+}
+
+const TodoDash = (props) => {
+    /*const state = {
+        tds: [{desc: 'todo 1', is_done: false}, {desc: 'todo 2', is_done: true}]
+    }*/
+    let {data: tds} = useGet({path: 'http://api.wagapi/v1/todo'})
+    if (tds && tds.data) tds = tds.data
+    if (tds === null || tds.length === 0) {
+        tds = [{desc: "first", is_done: false}]
+    }
+
+    const tdEnterOnKeyUp = (e) => {
+        if (e.keyCode !== 13) {
+            return
+        }
+
+        const new_desc = e.target.value
+        // state.tds = [{desc: new_desc, is_done: false}, ...state.tds]
+        j$('#tdinp').val('').text('')
+    }
+    const tdsOnCheck = (desc) => {
+        let new_tds = tds
+
+        let td_index = new_tds.findIndex(td => (td.desc === desc))
+        if (td_index < 0) {
+            alert('bad key')
+            return false
+        }
+        new_tds[td_index].is_done = ! (new_tds[td_index].is_done)
+        // state.tds = state.new_tds
+    }
+    const tdsDel = (desc) => {
+        // state.tds = state.tds.filter(td => (td.desc !== desc))
+    }
+
+    return (
+        <div>
+            Add new todo
+            <TdEnter onKeyUp={tdEnterOnKeyUp} />
+            <Tds tds={tds} onCheck={tdsOnCheck} tdsDel={tdsDel} />
+        </div>
+    )
+}
+
+export default TodoDash
