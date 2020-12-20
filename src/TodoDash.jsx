@@ -39,6 +39,15 @@ const TodoDash = (props) => {
     verb: "DELETE",
     path: `todo`,
   })
+  // Mock the `mutate` handler
+  const {mutate: td_create, cr8_loading} = useMutate({
+    verb: "POST",
+    path: `todo`,
+    // This will avoid any server call in favor of mock response
+    /*mock: {
+      mutate: new_td => console.log(`The item ${new_td.desc} was added`),
+    },*/
+  });
   let {data: tds} = useGet({path: 'todo'})
   if (tds === null || tds.length === 0) {
     tds = [{desc: "first", is_done: false}]
@@ -51,6 +60,10 @@ const TodoDash = (props) => {
 
     const new_desc = e.target.value
     // state.tds = [{desc: new_desc, is_done: false}, ...state.tds]
+    td_create({desc: new_desc, is_done: false}).then((newly_added_td) => {
+      console.log(`new td added`, newly_added_td)
+      tds = useGet({path: 'todo'})
+    })
     j$('#tdinp').val('').text('')
   }
   const tdsOnCheck = (desc) => {
