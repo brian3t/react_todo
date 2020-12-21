@@ -7,7 +7,7 @@ const Tds = (props) => (
             <div className="mt-1" key={td.id || i} data-id={td.id}>
                 <input type="checkbox" checked={td.is_done} onChange={() => props.onCheck(td.desc)} />&nbsp;&nbsp;
                 <span>{td.desc}</span>&nbsp;&nbsp;
-                <button type="button" className="btn btn-secondary" onClick={() => props.tdsDel(td.id)}>Delete</button>
+                <button type="button" className="btn btn-secondary" onClick={() => {props.tdsDel(td.id).then(props.refetch)}}>Delete</button>
             </div>
         ))}
     </div>
@@ -15,7 +15,8 @@ const Tds = (props) => (
 Tds.propTypes = {
     tds: PropTypes.arrayOf(object),
     onCheck: PropTypes.func,
-    tdsDel: PropTypes.func
+    tdsDel: PropTypes.func,
+    refetch: PropTypes.func
 }
 
 export default Tds

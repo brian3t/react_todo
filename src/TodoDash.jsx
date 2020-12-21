@@ -48,7 +48,7 @@ const TodoDash = (props) => {
       mutate: new_td => console.log(`The item ${new_td.desc} was added`),
     },*/
   });
-  let {data: tds} = useGet({path: 'todo'})
+  let {data: tds, get_loading, refetch} = useGet({path: 'todo'})
   if (tds === null || tds.length === 0) {
     tds = [{desc: "first", is_done: false}]
   }
@@ -62,7 +62,7 @@ const TodoDash = (props) => {
     // state.tds = [{desc: new_desc, is_done: false}, ...state.tds]
     td_create({desc: new_desc, is_done: false}).then((newly_added_td) => {
       console.log(`new td added`, newly_added_td)
-      tds = useGet({path: 'todo'})
+      refetch()
     })
     j$('#tdinp').val('').text('')
   }
@@ -85,7 +85,7 @@ const TodoDash = (props) => {
     <div>
       Add new todo
       <TdEnter onKeyUp={tdEnterOnKeyUp} />
-      <Tds tds={tds} onCheck={tdsOnCheck} tdsDel={del} />
+      <Tds tds={tds} onCheck={tdsOnCheck} tdsDel={del} refetch={refetch} />
     </div>
   )
 }
