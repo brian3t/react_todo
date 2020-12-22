@@ -48,6 +48,11 @@ const TodoDash = (props) => {
       mutate: new_td => console.log(`The item ${new_td.desc} was added`),
     },*/
   });
+  // Mock the `mutate` handler
+  const {mutate: td_update} = useMutate({
+    verb: "PATCH",
+    path: `todo`,
+  });
   let {data: tds, get_loading, refetch} = useGet({path: 'todo'})
   if (tds === null || tds.length === 0) {
     tds = [{desc: "first", is_done: false}]
@@ -66,16 +71,19 @@ const TodoDash = (props) => {
     })
     j$('#tdinp').val('').text('')
   }
-  const tdsOnCheck = (desc) => {
+  const tdsOnCheck = (id, is_done) => {
     let new_tds = tds
+    return td_update({
+      is_done: ! is_done
+    }, {queryParams: {id: id}})
 
-    let td_index = new_tds.findIndex(td => (td.desc === desc))
+    /*let td_index = new_tds.findIndex(td => (td.id === id))
     if (td_index < 0) {
       alert('bad key')
       return false
     }
     new_tds[td_index].is_done = ! (new_tds[td_index].is_done)
-    tds = new_tds
+    tds = new_tds*/
   }
   const tdsDel = (desc) => {
     // state.tds = state.tds.filter(td => (td.desc !== desc))
